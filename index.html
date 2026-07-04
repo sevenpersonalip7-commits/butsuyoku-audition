@@ -24,7 +24,6 @@
     <input type="password" id="password-input" placeholder="パスワード" autocomplete="current-password" />
     <div class="button-row">
       <button id="signin-btn">ログイン</button>
-      <button id="signup-btn" class="secondary">新規登録（初回のみ）</button>
     </div>
     <p id="auth-error" class="error hidden"></p>
   </section>
@@ -40,7 +39,7 @@
 </main>
 
 <script type="module">
-import { getCurrentUser, signIn, signUp, signOut, onAuthStateChange } from "./js/auth.js";
+import { getCurrentUser, signIn, signOut, onAuthStateChange } from "./js/auth.js";
 import { supabase } from "./js/supabaseClient.js";
 
 const loginSection = document.getElementById("login-section");
@@ -81,21 +80,6 @@ document.getElementById("signin-btn").addEventListener("click", async () => {
     await signIn(email, password);
   } catch (err) {
     authError.textContent = "ログイン失敗: " + err.message;
-    authError.classList.remove("hidden");
-  }
-});
-
-// 新規登録ボタン（最初の1回だけ使う想定）
-document.getElementById("signup-btn").addEventListener("click", async () => {
-  authError.classList.add("hidden");
-  const email = document.getElementById("email-input").value;
-  const password = document.getElementById("password-input").value;
-  try {
-    await signUp(email, password);
-    authError.textContent = "登録しました。確認メールが届いていればログインできます。";
-    authError.classList.remove("hidden");
-  } catch (err) {
-    authError.textContent = "登録失敗: " + err.message;
     authError.classList.remove("hidden");
   }
 });
