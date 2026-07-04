@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>物欲オーディション</title>
+<link rel="manifest" href="./manifest.json" />
+<meta name="theme-color" content="#2E5395" />
+<link rel="stylesheet" href="./css/style.css" />
+</head>
+<body>
+
+<header>
+  <h1>物欲オーディション</h1>
+  <div id="user-status"></div>
+</header>
+
+<main>
+  <!-- ログイン前に表示するフォーム -->
+  <section id="login-section" class="card hidden">
+    <h2>ログイン</h2>
+    <input type="email" id="email-input" placeholder="メールアドレス" autocomplete="email" />
+    <input type="password" id="password-input" placeholder="パスワード" autocomplete="current-password" />
+    <div class="button-row">
+      <button id="signin-btn">ログイン</button>
+      <button id="signup-btn" class="secondary">新規登録（初回のみ）</button>
+    </div>
+    <p id="auth-error" class="error hidden"></p>
+  </section>
+
+  <!-- ログイン後に表示する接続テストエリア -->
+  <section id="app-section" class="card hidden">
+    <h2>接続テスト</h2>
+    <p>下のボタンで、itemsテーブルにテストデータを1件insertします。</p>
+    <button id="test-insert-btn">テストアイテムを登録してみる</button>
+    <button id="signout-btn" class="secondary">ログアウト</button>
+    <p id="test-result"></p>
+  </section>
+</main>
+
+<script type="module">
+import { getCurrentUser, signIn, signUp, signOut, onAuthStateChange } from "./js/auth.js";
+import { supabase } from "./js/supabaseClient.js";
+
+const loginSection = document.getElementById("login-section");
+const appSection = document.getElementById("app-section");
+const userStatus = document.getElementById("user-status");
+const authError = document.getElementById("auth-error");
+
+function showLoggedIn(user) {
+  userStatus.textContent = user.email;
+  loginSection.classList.add("hidden");
+  appSection.classList.remove("hidden");
+}
+
+function showLoggedOut() {
+  userStatus.textContent = "";
+  loginSection.classList.remove("hidden");
+  appSection.classList.add("hidden");
+}
+
+// 初期状態の判定
+getCurrentUser().then((user) => {
+  if (user) showLoggedIn(user);
+  else showLoggedOut();
+});
+
+// ログイン状態の変化を監視
+onAuthStateChange((user) => {
+  if (user) showLoggedIn(user);
+  else showLoggedOut();
+});
+
+// ログインボタン
+document.getElementById("signin-btn").addEventListener("click", async () => {
+  authError.classList.add("hidden");
+  const email = document.getElementById("email-input").value;
+  const password = document.getElementById("password-input").value;
+  try {
+    await signIn(email, password);
+  } catch (err) {
+    authError.textContent = "ログイン失敗: " + err.message;
+    authError.classList.remove("hidden");
+  }
+});
+
+// 新規登録ボタン（最初の1回だけ使う想定）
+document.getElementById("signup-btn").addEventListener("click", async () => {
+  authError.classList.add("hidden");
+  const email = document.getElementById("email-input").value;
+  const password = document.getElementById("password-input").value;
+  try {
+    await signUp(email, password);
+    authError.textContent = "登録しました。確認メールが届いていればログインできます。";
+    authError.classList.remove("hidden");
+  } catch (err) {
+    authError.textContent = "登録失敗: " + err.message;
+    authError.classList.remove("hidden");
+  }
+});
+
+// ログアウトボタン
+document.getElementById("signout-btn").addEventListener("click", async () => {
+  await signOut();
+});
+
+// 接続テスト: itemsテーブルへ1件insertしてRLS込みで正しく動くか確認
+document.getElementById("test-insert-btn").addEventListener("click", async () => {
+  const resultEl = document.getElementById("test-result");
+  resultEl.textContent = "登録中...";
+
+  const { data, error } = await supabase
+    .from("items")
+    .insert({
+      name: "接続テストアイテム",
+      genre: "テスト",
+      image_url: "https://example.com/test.jpg",
+      purchase_reason: "Supabase接続テストのためのダミーデータです。30文字以上の条件を満たすために文章を伸ばしています。",
+      usage_plan: "テスト用のため実際には使用しません。",
+      status: "reviewing",
+    })
+    .select();
+
+  if (error) {
+    resultEl.textContent = "❌ 失敗: " + error.message;
+    console.error(error);
+  } else {
+    resultEl.textContent = "✅ 成功！登録されたID: " + data[0].id;
+    console.log(data);
+  }
+});
+
+// Service Worker登録 (PWA化)
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch((err) => {
+      console.error("Service Worker登録失敗:", err);
+    });
+  });
+}
+</script>
+
+</body>
+</html>
