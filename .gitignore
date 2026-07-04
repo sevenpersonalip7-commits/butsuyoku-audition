@@ -1,0 +1,19 @@
+# Node
+node_modules/
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# エディタ
+.vscode/*
+!.vscode/extensions.json
+
+# 一時ファイル・ビルド成果物
+dist/
+*.local
+
+# 環境変数（将来、鍵をここに逃がす場合に備えて）
+.env
+.env.local
