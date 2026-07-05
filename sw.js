@@ -1,6 +1,6 @@
 // 物欲オーディション - Service Worker
 // バージョンを上げると古いキャッシュが破棄される（更新のたびにCACHE_NAMEを変更する）
-const CACHE_NAME = "monoyoku-audition-v2";
+const CACHE_NAME = "monoyoku-audition-v3";
 
 // 最低限、オフラインでも起動できるようにする静的ファイル一覧
 const PRECACHE_ASSETS = [
@@ -11,9 +11,15 @@ const PRECACHE_ASSETS = [
   "./js/supabaseClient.js",
   "./js/auth.js",
   "./js/ui.js",
-  "./js/testConnection.js",
   "./js/sw-register.js",
   "./js/main.js",
+  "./js/imageCompress.js",
+  "./js/masterSettings.js",
+  "./js/monthlyCount.js",
+  "./js/benchmarkItem.js",
+  "./js/regretPatternCheck.js",
+  "./js/emergencyMode.js",
+  "./js/audition.js",
 ];
 
 // インストール時: 静的アセットを事前キャッシュ

@@ -3,7 +3,7 @@
 
 import { getCurrentUser, signIn, signOut, onAuthStateChange } from "./auth.js";
 import { showLoggedIn, showLoggedOut } from "./ui.js";
-import { setupTestConnection } from "./testConnection.js";
+import { initAuditionForm } from "./audition.js";
 import { registerServiceWorker } from "./sw-register.js";
 
 const authError = document.getElementById("auth-error");
@@ -38,8 +38,12 @@ document.getElementById("signout-btn").addEventListener("click", async () => {
   await signOut();
 });
 
-// 接続テスト機能のセットアップ（マスタ設定・審査フォーム完成後は削除予定）
-setupTestConnection();
+// 「新規審査を始める」ボタン
+document.getElementById("start-audition-btn").addEventListener("click", async () => {
+  document.getElementById("app-section").classList.add("hidden");
+  document.getElementById("audition-section").classList.remove("hidden");
+  await initAuditionForm();
+});
 
 // PWA化
 registerServiceWorker();

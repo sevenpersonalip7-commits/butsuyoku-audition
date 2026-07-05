@@ -28,14 +28,112 @@
     <p id="auth-error" class="error hidden"></p>
   </section>
 
-  <!-- ログイン後に表示する接続テストエリア -->
+  <!-- ログイン後: ダッシュボード -->
   <section id="app-section" class="card hidden">
-    <h2>接続テスト</h2>
-    <p>下のボタンで、itemsテーブルにテストデータを1件insertします。</p>
-    <button id="test-insert-btn">テストアイテムを登録してみる</button>
-    <button id="signout-btn" class="secondary">ログアウト</button>
-    <p id="test-result"></p>
+    <div class="dashboard-header">
+      <button id="signout-btn" class="secondary">ログアウト</button>
+    </div>
+    <button id="start-audition-btn">📝 新規審査を始める</button>
   </section>
+
+  <!-- 購買審査フォーム -->
+  <section id="audition-section" class="card hidden">
+    <h2>物欲オーディション</h2>
+    <p id="audition-error" class="error hidden"></p>
+
+    <!-- 画像必須アップロード -->
+    <div class="form-group">
+      <label for="image-input">① 画像をアップロード（必須）</label>
+      <input type="file" id="image-input" accept="image/*" />
+      <img id="image-preview" class="image-preview hidden" alt="プレビュー" />
+    </div>
+
+    <!-- 画像が入るまで無効化されるフォーム本体 -->
+    <div id="audition-fields" class="disabled">
+      <div class="form-group">
+        <label for="item-name">アイテム名</label>
+        <input type="text" id="item-name" placeholder="例: ○○ アクリルスタンド" />
+      </div>
+
+      <div class="form-group">
+        <label for="genre-select">ジャンル</label>
+        <select id="genre-select"><option value="">選択してください</option></select>
+      </div>
+
+      <!-- ② 歴代最強との比較表示 -->
+      <div id="benchmark-area" class="benchmark-area hidden"></div>
+
+      <div class="form-group">
+        <label for="work-rank-select">作品ランク</label>
+        <select id="work-rank-select"><option value="">選択してください</option></select>
+      </div>
+
+      <div class="form-group">
+        <label for="price-input">価格（円）</label>
+        <input type="number" id="price-input" placeholder="例: 3300" />
+      </div>
+
+      <div class="form-group">
+        <label for="purchase-reason">購入理由（30文字以上）</label>
+        <textarea id="purchase-reason" rows="3" placeholder="これを買ってどうしたいか、具体的に"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="usage-plan">どこに飾るか / どう使うか</label>
+        <textarea id="usage-plan" rows="2"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>星評価（記録用・スコアには影響しません）</label>
+        <div class="rating-row">
+          <span>クオリティ</span>
+          <select id="quality-rating"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+        </div>
+        <div class="rating-row">
+          <span>作画の好み</span>
+          <select id="art-style-rating"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+        </div>
+        <div class="rating-row">
+          <span>レアリティ</span>
+          <select id="rarity-rating"><option value="">-</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="passion-select">この情熱は2〜3年後も続いていると思いますか？</label>
+        <select id="passion-select">
+          <option value="">選択してください</option>
+          <option value="lasting">はい、続くと思う</option>
+          <option value="unsure">わからない</option>
+          <option value="temporary">たぶん一時的な旬</option>
+        </select>
+      </div>
+
+      <div class="form-group custom-conditions">
+        <label>カスタム条件（当てはまるものを選択）</label>
+        <div id="custom-conditions-list"></div>
+      </div>
+
+      <div class="form-group emergency-toggle-row">
+        <label class="checkbox-row">
+          <input type="checkbox" id="emergency-toggle" />
+          24時間ロックを待てない（緊急審査モード）
+        </label>
+      </div>
+
+      <div id="emergency-fields" class="hidden">
+        <div class="form-group">
+          <label for="emergency-reason">緊急審査の理由（150文字以上・NGワード不可・作品ランク2位以上限定）</label>
+          <textarea id="emergency-reason" rows="4"></textarea>
+        </div>
+      </div>
+
+      <button id="submit-audition-btn">審査を提出する</button>
+    </div>
+  </section>
+
+  <!-- 審査結果 -->
+  <section id="audition-result" class="card hidden"></section>
 </main>
 
 <script type="module" src="./js/main.js"></script>
