@@ -92,7 +92,7 @@ function populateWorkRankOptions() {
   for (const r of state.workRanks) {
     const opt = document.createElement("option");
     opt.value = r.rank_no;
-    opt.textContent = `${r.rank_no}位（${r.score}点）`;
+    opt.textContent = `${r.rank_no}位`;
     select.appendChild(opt);
   }
 }
@@ -105,7 +105,7 @@ function populateCustomConditions() {
     label.className = "checkbox-row";
     label.innerHTML = `
       <input type="checkbox" value="${c.id}" data-points="${c.points}" />
-      ${c.label}（${c.points > 0 ? "+" : ""}${c.points}点）
+      ${c.label}
     `;
     container.appendChild(label);
   }
@@ -165,11 +165,23 @@ async function onGenreChanged(e) {
       <img src="${benchmark.image_url}" alt="${benchmark.name}" />
       <div>
         <strong>${benchmark.name}</strong>
-        <p class="text-muted">最終スコア: ${benchmark.final_score ?? "-"}点</p>
+        ${renderBenchmarkStars(benchmark)}
       </div>
     </div>
   `;
   benchmarkArea.classList.remove("hidden");
+}
+
+// ベンチマークの星評価を表示（スコアは見せず、評価の目安だけ伝える）
+function renderBenchmarkStars(benchmark) {
+  const stars = (n) => (n ? "★".repeat(n) + "☆".repeat(5 - n) : "-");
+  return `
+    <p class="text-muted benchmark-stars">
+      クオリティ ${stars(benchmark.quality_rating)} /
+      作画 ${stars(benchmark.art_style_rating)} /
+      レア度 ${stars(benchmark.rarity_rating)}
+    </p>
+  `;
 }
 
 function onEmergencyToggle(e) {
@@ -347,16 +359,16 @@ function showResult({ decision, finalScore, breakdown }) {
 
   resultArea.innerHTML = `
     <h2 class="${decisionClass}">${decisionLabel}</h2>
-    <p class="final-score">最終納得度スコア: ${finalScore}点</p>
+    <p class="final-score">最終納得度スコア: ${finalScore}</p>
     <details>
       <summary>スコア内訳を見る</summary>
       <ul>
-        <li>作品ランク＋ジャンル優先度: ${breakdown.baseScore}点</li>
-        <li>カスタム条件加減算: ${breakdown.customBonusTotal >= 0 ? "+" : ""}${breakdown.customBonusTotal}点</li>
-        ${breakdown.debuffLabel ? `<li>${breakdown.debuffLabel} 提出件数デバフ: ${breakdown.submissionDebuff}点</li>` : ""}
-        <li>情熱の持続性デバフ: ${breakdown.passionPenalty}点</li>
+        <li>作品ランク＋ジャンル優先度: ${breakdown.baseScore}</li>
+        <li>カスタム条件加減算: ${breakdown.customBonusTotal >= 0 ? "+" : ""}${breakdown.customBonusTotal}</li>
+        ${breakdown.debuffLabel ? `<li>${breakdown.debuffLabel} 提出件数デバフ: ${breakdown.submissionDebuff}</li>` : ""}
+        <li>情熱の持続性デバフ: ${breakdown.passionPenalty}</li>
         ${breakdown.regretDebuff !== 0
-          ? `<li>⚠️ 過去に「${breakdown.regretCategory}」という理由で${breakdown.regretCount}件処分しているパターンに一致: ${breakdown.regretDebuff}点</li>`
+          ? `<li>⚠️ 過去に「${breakdown.regretCategory}」という理由で${breakdown.regretCount}件処分しているパターンに一致: ${breakdown.regretDebuff}</li>`
           : ""}
       </ul>
     </details>
